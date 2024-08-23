@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auto-Fill OTP</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
+    .otp-container {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    input {
+      font-size: 1.2em;
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      font-size: 1.2em;
+      padding: 10px;
+      width: 100%;
+      border-radius: 5px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:disabled {
+      background-color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div class="otp-container">
+    <h2>Enter OTP</h2>
+    <input type="text" id="otp" name="otp" placeholder="Waiting for OTP..." autocomplete="one-time-code">
+    <button id="verifyOtp" disabled>Verify OTP</button>
+  </div>
+
+  <script>
+    const otpInput = document.getElementById('otp');
+    const verifyBtn = document.getElementById('verifyOtp');
+
+    if ('OTPCredential' in window) {
+      window.addEventListener('DOMContentLoaded', async () => {
+        try {
+          // Request the OTP from the Web OTP API
+          const content = await navigator.credentials.get({ otp: { transport: ['sms'] } });
+          // Automatically fill the input with the received OTP
+          otpInput.value = content.code;
+          // Enable the verify button once OTP is filled
+          verifyBtn.disabled = false;
+        } catch (err) {
+          console.error("Error fetching OTP:", err);
+        }
+      });
+    } else {
+      otpInput.placeholder = "Your browser does not support OTP auto-fill";
+    }
+
+    verifyBtn.addEventListener('click', () => {
+      alert('OTP Verified: ' + otpInput.value);
+    });
+  </script>
+</body>
+</html>
